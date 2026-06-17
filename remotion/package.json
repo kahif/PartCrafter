@@ -1,0 +1,32 @@
+{
+  "name": "partcrafter-remotion",
+  "version": "1.0.0",
+  "description": "Programmatic video library for PartCrafter, built with Remotion. Renders title/teaser cards and 3D turntable showcases of generated parts.",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "dev": "remotion studio",
+    "studio": "remotion studio",
+    "render": "remotion render Showcase out/showcase.mp4",
+    "render:turntable": "remotion render PartsTurntable out/turntable.mp4",
+    "render:title": "remotion render TitleCard out/title.mp4",
+    "still": "remotion still TitleCard out/title.png",
+    "compositions": "remotion compositions",
+    "typecheck": "tsc --noEmit",
+    "upgrade": "remotion upgrade"
+  },
+  "dependencies": {
+    "@react-three/fiber": "^8.17.10",
+    "@remotion/cli": "^4.0.230",
+    "@remotion/three": "^4.0.230",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "remotion": "^4.0.230",
+    "three": "^0.169.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.12",
+    "@types/three": "^0.169.0",
+    "typescript": "^5.6.3"
+  }
+}
