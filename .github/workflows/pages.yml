@@ -1,12 +1,8 @@
 name: Deploy MIROFISH dashboard to Pages
 
+# Optional: only used if you set Pages "Source" to "GitHub Actions".
+# The simplest path is "Deploy from a branch" — see README, no workflow needed.
 on:
-  push:
-    branches:
-      - claude/create-this-rhgqxb
-    paths:
-      - mirofish-dashboard.html
-      - .github/workflows/pages.yml
   workflow_dispatch:
 
 permissions:
@@ -35,8 +31,6 @@ jobs:
 
       - name: Configure Pages
         uses: actions/configure-pages@v5
-        with:
-          enablement: true
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
