@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MIROFISH · CLAUDE FABLE 5 — Crypto Tail Sniper</title>
+<style>
+  :root{
+    --bg:#070707;
+    --panel:#fbfbf9;
+    --ink:#15140f;
+    --mute:#9a978e;
+    --line:#e4e2da;
+    --green:#1f8a4c;
+    --green-soft:#cfe8d6;
+    --red:#c2342f;
+    --accent:#111;
+    --mono:"SFMono-Regular",ui-monospace,"Cascadia Mono","Menlo",Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--mono);-webkit-font-smoothing:antialiased}
+  .wrap{max-width:760px;margin:0 auto;padding:18px 14px 60px}
+
+  /* News header */
+  .news{display:flex;gap:14px;align-items:center;padding:8px 4px 14px}
+  .ava{width:64px;height:64px;border-radius:50%;background:#ededeb;display:flex;align-items:center;justify-content:center;font-weight:800;color:#222;font-size:13px;letter-spacing:.5px;flex:0 0 auto}
+  .news h1{margin:0;font-size:23px;font-weight:800;color:#fff;line-height:1.05;font-family:Georgia,"Times New Roman",serif;letter-spacing:.3px}
+  .news .sub{color:#7d7d7d;font-weight:700;font-size:20px;font-family:Georgia,serif}
+  .badge-v{color:#1d9bf0}
+  .headline{color:#f4f4f2;font-family:Georgia,"Times New Roman",serif;font-size:25px;line-height:1.28;font-weight:500;padding:2px 4px 16px}
+
+  /* Dashboard card */
+  .board{background:var(--panel);border:1px solid #d9d7cf;border-radius:6px;overflow:hidden;box-shadow:0 30px 80px -30px rgba(0,0,0,.7)}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:9px 12px;border-bottom:1px solid var(--line);font-size:10px;letter-spacing:.4px}
+  .topbar .l{display:flex;align-items:center;gap:9px;color:#3a3833}
+  .dot-ic{width:18px;height:18px;border:1.5px solid #1b1b1b;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:9px}
+  .topbar b{font-weight:800}
+  .topbar .r{display:flex;align-items:center;gap:12px;color:#6b6960}
+  .pill{border:1px solid #bfe0c8;background:#e8f5ec;color:#1f8a4c;border-radius:3px;padding:3px 7px;font-weight:700;letter-spacing:.5px}
+  .pill.dark{border-color:#cfcdc5;background:#f1f0ec;color:#4a4843}
+
+  .grid2{display:grid;grid-template-columns:1.55fr 1fr;gap:0}
+  .cell{padding:13px 14px;border-bottom:1px solid var(--line)}
+  .cell+.cell{border-left:1px solid var(--line)}
+  .ttl{font-size:9.5px;letter-spacing:.7px;color:#7c7a72;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .ttl .tag{border:1px solid #d8c7c5;background:#fbeeed;color:#b0413c;border-radius:3px;padding:1px 5px;font-weight:700}
+  .ttl .tag.g{border-color:#c4dfca;background:#eef7f0;color:#2c8a52}
+  .big{font-size:40px;font-weight:800;letter-spacing:-1px;margin:7px 0 4px;color:#1c1b16}
+  .big .cur{color:#c2342f;font-weight:800}
+  .small-row{font-size:9.5px;color:#84827a;display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+  .chipnum{background:#f1f0ec;border:1px solid #e2e0d8;border-radius:3px;padding:2px 6px;color:#3c3a34;font-weight:700}
+  .statline{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+  .stat .v{color:#1f8a4c;font-weight:800;font-size:12px}
+  .stat .k{color:#9c9a92;font-size:8.5px;letter-spacing:.4px;margin-top:2px}
+  .foot-an{margin-top:13px;font-size:9px;color:#a3a199;display:flex;justify-content:space-between;align-items:center}
+
+  .winhead{display:flex;justify-content:space-between;align-items:center;font-size:9.5px;letter-spacing:.6px;color:#7c7a72}
+  .winbig{font-size:34px;font-weight:800;color:#171612;letter-spacing:-1px;margin:6px 0;display:flex;align-items:baseline;gap:4px}
+  .wingreen{color:#1f8a4c;font-weight:800;font-size:18px;text-align:right}
+  .sparkbox{height:40px;margin-top:4px}
+
+  /* sections */
+  .section{padding:12px 14px 6px;border-bottom:1px solid var(--line)}
+  .sec-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+  .sec-head .name{font-size:11px;font-weight:800;letter-spacing:.3px;color:#1c1b16}
+  .sec-head .name:before{content:"›";color:#bdbbb2;margin-right:6px}
+  .sec-head .meta{font-size:8.5px;color:#a8a69d;letter-spacing:.5px;text-align:right}
+  .sec-body{display:grid;grid-template-columns:128px 1fr;gap:14px}
+  .kv{font-size:9px;color:#86847c}
+  .kv .row{display:flex;justify-content:space-between;padding:3px 0;border-bottom:1px dotted #e8e6de}
+  .kv .row b{color:#2a2924;font-weight:800}
+  .kv .row b.g{color:#1f8a4c}
+  .kv .row b.r{color:#c2342f}
+  .kv .note{margin-top:10px;color:#b4b2a9;font-size:8px;line-height:1.5;letter-spacing:.3px}
+  .kv .barbits{margin-top:8px;font-size:8px;color:#7aa384;letter-spacing:1px;word-break:break-all}
+  canvas{display:block;width:100%;border-radius:3px}
+  .legend{font-size:8.5px;color:#86847c;line-height:1.7}
+  .legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px;vertical-align:middle}
+
+  .botbar{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;font-size:8px;letter-spacing:.5px;color:#9a988f}
+  .botbar .on{color:#1f8a4c;font-weight:800}
+
+  /* phone nav imitation */
+  .nav{display:flex;justify-content:space-around;align-items:center;padding:18px 0 6px;color:#cfcfcf}
+  .nav svg{width:24px;height:24px}
+  .cap{color:#6a6a6a;font-size:11px;text-align:center;padding-top:18px;font-family:Georgia,serif}
+  a{color:#7ab6ff}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- ===== Fake news post header ===== -->
+  <div class="news">
+    <div class="ava">G/RSTA</div>
+    <div>
+      <h1>Girsta <span class="badge-v">✔</span></h1>
+      <div class="sub">AI NEWS</div>
+    </div>
+  </div>
+  <div class="headline">AI RELEASE: Claude can now control TradingView charts and run backtesting through a local MCP bridge</div>
+
+  <!-- ===== Dashboard ===== -->
+  <div class="board">
+
+    <!-- top bar -->
+    <div class="topbar">
+      <div class="l">
+        <span class="dot-ic">◴</span>
+        <span>ANONYMOUS WALLET <b>0x08DC…4524</b> · 5,944 FILLS · ZERO…</span>
+        <span style="margin-left:6px"><b>CLAUDE FABLE 5 · MIROFISH</b></span>
+      </div>
+      <div class="r">
+        <span class="pill">● LIVE · MAINNET</span>
+        <span class="pill dark">ROUND #7165</span>
+        <span id="clock"><b>22:09:50</b> UTC</span>
+      </div>
+    </div>
+
+    <!-- PnL + Top wins -->
+    <div class="grid2">
+      <div class="cell">
+        <div class="ttl">CLAUDE FABLE 5 · TOTAL PNL <span class="tag">CRYPTO TAIL SNIPER</span> <span class="tag g">+1 BTC</span></div>
+        <div class="big"><span class="cur">$</span><span id="pnl">406,925</span></div>
+        <div class="small-row">
+          realised · anonymous <span class="chipnum">5,944 trades</span> <span class="chipnum">71% WR</span> <span class="chipnum">Sharpe 4.21</span>
+        </div>
+        <div class="statline">
+          <div class="stat"><div class="v">+$31,423</div><div class="k">ETH ×2.6× · APR</div></div>
+          <div class="stat"><div class="v">+$29,247</div><div class="k">XRP UP · APR B</div></div>
+          <div class="stat"><div class="v">+$28,062</div><div class="k">BTC ×60× · JUN</div></div>
+          <div class="stat"><div class="v">+$14,276</div><div class="k">ETH ×2.4× · APR</div></div>
+        </div>
+        <div class="foot-an"><span>anon 0x08dc…4524</span><span class="pill" style="font-size:8px">● LIVE · MAINNET</span></div>
+      </div>
+
+      <div class="cell">
+        <div class="winhead"><span>▸ TOP WINS · BTC · POLYMARKET</span><span>1 / 6</span></div>
+        <div class="winbig">x<span id="mult">0</span>.38 <span style="flex:1"></span><span class="wingreen">+$31,423</span></div>
+        <div class="small-row" style="margin-top:2px">
+          <span>APR · ETH ×2.6× · WIN @ 4×</span>
+        </div>
+        <div class="small-row" style="margin-top:6px">ENTRY → PAYOUT</div>
+        <div class="winbig" style="font-size:18px;margin:2px 0"><span>$3,829</span> → <span style="color:#1f8a4c">$34,482</span></div>
+        <canvas id="spark" class="sparkbox" height="80"></canvas>
+      </div>
+    </div>
+
+    <!-- Probability Lattice -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="name">Probability Lattice · 5,944 Trades, One Board</div>
+        <div class="meta">EVERY TRADE · ONE BALL · 8 VOLATILITY GATES · EDGE TILTS THE BOARD</div>
+      </div>
+      <div class="sec-body">
+        <div class="kv">
+          <div style="color:#a8a69d;letter-spacing:.5px;margin-bottom:5px">LIVE CONVERGENCE</div>
+          <div class="row"><span>BALLS DROPPED</span><b id="ll-drop">328</b></div>
+          <div class="row"><span>LANDED GREEN</span><b class="g" id="ll-green">74.1%</b></div>
+          <div class="row"><span>EV / TRADE</span><b class="g">+$71</b></div>
+          <div class="row"><span>SESSION PNL</span><b class="g">+$23,225</b></div>
+          <div class="row"><span>ALL-TIME</span><b>5,944</b></div>
+          <div class="row"><span>REALISED</span><b class="g">+$401,819</b></div>
+          <div class="note">LAW OF LARGE NUMBERS · THE EDGE ONLY NEEDS REPETITION</div>
+        </div>
+        <canvas id="lattice" height="300"></canvas>
+      </div>
+    </div>
+
+    <!-- Tail Probability Ridge -->
+    <div class="section">
+      <div class="sec-head">
+        <div class="name">Tail Probability Ridge · Strike Landscape</div>
+        <div class="meta">EVERY RIDGE · ONE SESSION · STRIKE · PAYOUT FRONTIER · TAILS PAY ·30·</div>
+      </div>
+      <div class="sec-body">
+        <div class="kv">
+          <div style="color:#a8a69d;letter-spacing:.5px;margin-bottom:5px">TAIL SCANNER · LIVE</div>
+          <div class="row"><span>SESSIONS</span><b>1,293</b></div>
+          <div class="row"><span>TAIL MASS</span><b class="r">0.21%</b></div>
+          <div class="row"><span>IMPLIED MULT</span><b>×476.2</b></div>
+          <div class="row"><span>AVG ENTRY</span><b>1.2¢</b></div>
+          <div class="row"><span>BEST HIT</span><b class="g">×81.2</b></div>
+          <div class="row"><span>ALL-TIME</span><b>5,944</b></div>
+          <div class="row"><span>REALISED</span><b class="g">+$401,819</b></div>
+          <div class="note">PENNIES INTO THE TAIL · HUNDREDS OUT WHEN THE STRIKE BREAKS</div>
+        </div>
+        <canvas id="ridge" height="300"></canvas>
+      </div>
+    </div>
+
+    <!-- Relationship Graph -->
+    <div class="section" style="border-bottom:none">
+      <div class="sec-head">
+        <div class="name">MIROFISH · RELATIONSHIP GRAPH SIMULATION</div>
+        <div class="meta">NODES 67 · EDGES 149 · SIGNAL 91.4% · ITER 1100</div>
+      </div>
+      <div class="sec-body">
+        <div class="kv">
+          <div style="color:#a8a69d;letter-spacing:.5px;margin-bottom:5px">NODE CLASS</div>
+          <div class="legend">
+            <div><i style="background:#c2342f"></i>Bear signal</div>
+            <div><i style="background:#1f8a4c"></i>Bull signal</div>
+            <div><i style="background:#111"></i>Median path</div>
+            <div><i style="background:#e9a23b"></i>Catalyst</div>
+            <div><i style="background:#9a98c8"></i>Cluster hub</div>
+          </div>
+          <div style="height:8px"></div>
+          <div class="row"><span>BEAR PATHS</span><b class="r">579</b></div>
+          <div class="row"><span>BULL PATHS</span><b class="g">1,404</b></div>
+          <div class="row"><span>PATHS SIM</span><b>2,072</b></div>
+          <div class="row"><span>ITER / SEC</span><b>300</b></div>
+          <div class="row"><span>CONVERGENCE</span><b class="g" id="conv">91%</b></div>
+          <div class="barbits">▓▓▓▓▓▓▓▓▓▒░</div>
+          <div class="row"><span>PREDICTED</span><b class="g">▲ UP</b></div>
+          <div class="row"><span>MEDIAN FAIR</span><b>+$74,900</b></div>
+        </div>
+        <div>
+          <canvas id="graph" height="270"></canvas>
+          <div class="sec-head" style="margin-top:8px">
+            <div class="meta" style="text-align:left">P(UP) <b style="color:#1f8a4c">0.71</b> &nbsp; P(DOWN) <b style="color:#c2342f">0.29</b> &nbsp; EDGE VS BOOK <b style="color:#1f8a4c">+38¢</b> &nbsp; CONFIDENCE <b style="color:#1f8a4c">91.4%</b></div>
+          </div>
+          <canvas id="edgehist" height="56" style="margin-top:4px"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <!-- bottom -->
+    <div class="botbar">
+      <span><span class="on">● AGENT ONLINE</span> · MODEL CLAUDE-FABLE-5 · TRADER 0X08DC…4524 · 5,944 FILLS · BACKTEST BY… · 41.8 GB · LATENCY 158C</span>
+      <span>STACK MIROFISH-CORE · FABLE-FORK</span>
+    </div>
+
+  </div>
+
+  <!-- phone nav -->
+  <div class="nav">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8M5 10v10h14V10"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4-4"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="16" rx="3"/><path d="M10 9l5 3-5 3z"/></svg>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.5-7-10a4 4 0 017-2 4 4 0 017 2c0 5.5-7 10-7 10z"/></svg>
+    <div class="ava" style="width:24px;height:24px;font-size:6px">●</div>
+  </div>
+  <div class="cap">Recreated dashboard — fictional. Not financial advice.</div>
+
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+const DPR=Math.max(1,window.devicePixelRatio||1);
+function fit(c,h){const w=c.clientWidth;c.width=w*DPR;c.height=h*DPR;const x=c.getContext('2d');x.setTransform(DPR,0,0,DPR,0,0);return {x,w,h};}
+
+/* ---------- live clock ---------- */
+let t=new Date(Date.UTC(2026,5,20,22,9,50));
+setInterval(()=>{t=new Date(t.getTime()+1000);
+  const hh=String(t.getUTCHours()).padStart(2,'0'),mm=String(t.getUTCMinutes()).padStart(2,'0'),ss=String(t.getUTCSeconds()).padStart(2,'0');
+  $('clock').innerHTML=`<b>${hh}:${mm}:${ss}</b> UTC`;},1000);
+
+/* ---------- count-up headline numbers ---------- */
+function countUp(el,target,fmt,ms){const start=performance.now();const f0=0;
+  function step(now){let p=Math.min(1,(now-start)/ms);p=1-Math.pow(1-p,3);el.textContent=fmt(f0+(target-f0)*p);if(p<1)requestAnimationFrame(step);}requestAnimationFrame(step);}
+countUp($('pnl'),406925,v=>Math.round(v).toLocaleString(),1400);
+countUp($('mult'),0,v=>v.toFixed(0),900);
+
+/* ---------- sparkline (top wins) ---------- */
+(function(){const{x,w,h}=fit($('spark'),40);
+  const pts=[];let v=8;for(let i=0;i<60;i++){v+=(Math.random()-0.42)*4;v=Math.max(2,v);pts.push(v);}
+  pts[59]=Math.max(...pts)+4;
+  const mn=Math.min(...pts),mx=Math.max(...pts);
+  x.beginPath();pts.forEach((p,i)=>{const px=i/(pts.length-1)*w,py=h-((p-mn)/(mx-mn))*(h-6)-3;i?x.lineTo(px,py):x.moveTo(px,py);});
+  x.strokeStyle='#1f8a4c';x.lineWidth=1.4;x.stroke();
+  x.lineTo(w,h);x.lineTo(0,h);x.closePath();x.fillStyle='rgba(31,138,76,.10)';x.fill();
+})();
+
+/* ---------- Galton board / Probability Lattice ---------- */
+(function(){
+  const c=$('lattice');const{x,w,h}=fit(c,300);
+  const ROWS=8;const top=18,boardH=150;
+  const cx=w/2;const spread=Math.min(w*0.42,160);
+  const pegs=[];
+  for(let r=0;r<ROWS;r++){const n=r+1;const y=top+r/(ROWS-1)*boardH;
+    for(let i=0;i<n;i++){const xx=cx+(i-(n-1)/2)*(spread*2/(ROWS));pegs.push({x:xx,y});}}
+  const BINS=ROWS+1;const counts=new Array(BINS).fill(0);
+  const tilt=0.58; // edge: tilts probability right (toward profit)
+  let balls=[];let dropped=328;
+  const binW=spread*2/(ROWS);const binBase=top+boardH+8;
+  function spawn(){balls.push({x:cx+(Math.random()-.5)*3,y:0,vy:0,row:0,bin:0,settled:false,land:Math.random()<0.741});}
+  function step(){
+    x.clearRect(0,0,w,h);
+    // board frame guide line
+    x.strokeStyle='#ececn'.replace('n','5');x.strokeStyle='#ececec';
+    // pegs
+    pegs.forEach(p=>{x.beginPath();x.arc(p.x,p.y,1.4,0,7);x.fillStyle='#d6d4cc';x.fill();});
+    // breakeven divider
+    x.setLineDash([3,3]);x.strokeStyle='#bdbbb2';x.beginPath();x.moveTo(cx,top-6);x.lineTo(cx,binBase+90);x.stroke();x.setLineDash([]);
+    x.fillStyle='#9a978e';x.font='8px monospace';x.textAlign='center';
+    x.fillText('LOSS · 2%',cx-spread*0.55,top-4);
+    // breakeven tag
+    x.strokeStyle='#cdcbc2';x.strokeRect(cx-22,top-13,44,11);x.fillStyle='#6b6960';x.fillText('BREAKEVEN',cx,top-5);
+    x.fillStyle='#1f8a4c';x.fillText('PROFIT · 74%',cx+spread*0.55,top-4);
+
+    // histogram
+    const maxC=Math.max(10,...counts);
+    for(let b=0;b<BINS;b++){const bx=cx+(b-(BINS-1)/2)*binW;const bh=counts[b]/maxC*78;
+      const profit=b>ROWS/2;
+      x.fillStyle=profit?'#3f9e63':'#bdbbb3';
+      x.globalAlpha=profit?0.92:0.8;
+      x.fillRect(bx-binW*0.4,binBase+88-bh,binW*0.8,bh);x.globalAlpha=1;}
+    // axis ticks
+    x.fillStyle='#b8b6ad';x.font='7px monospace';
+    [0,25,50,75,100].forEach((v,i)=>{const bx=cx+((i/4)*ROWS-(BINS-1)/2)*binW;x.fillText(v,bx,binBase+90);});
+
+    // balls physics (simplified lattice descent)
+    balls.forEach(b=>{
+      if(b.settled)return;
+      b.vy+=0.55;b.y+=b.vy*0.5;
+      if(b.row<ROWS && b.y>top+b.row/(ROWS-1)*boardH){
+        const go=(Math.random()<(b.land?tilt:1-tilt))?1:0;
+        b.bin+=go;b.x+=(go?1:-1)*binW/2;b.row++;b.vy*=0.4;
+      }
+      if(b.y>binBase+60){b.settled=true;let bin=Math.round((b.x-cx)/binW+(BINS-1)/2);bin=Math.max(0,Math.min(BINS-1,bin));counts[bin]++;dropped++;}
+      x.beginPath();x.arc(b.x,b.y,2.1,0,7);x.fillStyle=b.land?'#2c2c2c':'#999';x.fill();
+    });
+    balls=balls.filter(b=>!b.settled);
+    // mini convergence curve top-right
+    x.strokeStyle='#bdbbb2';x.lineWidth=1;x.beginPath();
+    const total=counts.reduce((a,b)=>a+b,0)||1;const grn=counts.slice(Math.ceil(BINS/2)).reduce((a,b)=>a+b,0);
+    $('ll-drop').textContent=(dropped).toLocaleString();
+    $('ll-green').textContent=((grn/total*100||74.1).toFixed(1))+'%';
+    if(Math.random()<0.35)spawn();
+    requestAnimationFrame(step);
+  }
+  for(let i=0;i<6;i++)spawn();step();
+})();
+
+/* ---------- Tail Probability Ridge (3D ridgeline) ---------- */
+(function(){
+  const c=$('ridge');const{x,w,h}=fit(c,300);
+  const LINES=26,N=90;let phase=0;
+  function ridge(){
+    x.clearRect(0,0,w,h);
+    const ox=w*0.16,oy=h*0.30,sx=(w*0.72)/N,dz=5.2,dzx=2.0,amp=64;
+    // strike marker box
+    for(let l=LINES-1;l>=0;l--){
+      const z=l;const baseY=oy+z*dz;
+      x.beginPath();
+      for(let i=0;i<=N;i++){
+        const t=i/N;
+        // bump centered, drifting + a fat right tail
+        const center=0.46+0.04*Math.sin(phase*0.5+l*0.2);
+        const g=Math.exp(-Math.pow((t-center)/0.13,2))*amp*(0.5+0.5*Math.sin(phase*0.3+l*0.25));
+        const tail=Math.exp(-Math.pow((t-0.8)/0.05,2))*amp*0.32*(t>0.7?1:0);
+        const yy=baseY - g - tail;
+        const xx=ox+i*sx+z*dzx;
+        i?x.lineTo(xx,yy):x.moveTo(xx,yy);
+      }
+      // close to baseline for fill
+      const xEnd=ox+N*sx+z*dzx, xStart=ox+z*dzx;
+      x.lineTo(xEnd,baseY);x.lineTo(xStart,baseY);x.closePath();
+      const shade=Math.round(255-l*1.4);
+      x.fillStyle=`rgb(${shade},${shade},${shade-2})`;x.fill();
+      x.strokeStyle=l<3?'#d77':'#cbc9c0';x.lineWidth=0.8;x.stroke();
+      // red tail highlight on near rows
+      if(l<4){x.strokeStyle='rgba(194,52,47,'+(0.5-l*0.1)+')';x.lineWidth=1.1;
+        x.beginPath();const cT=0.8;const xx=ox+cT*N*sx+z*dzx;x.moveTo(xx,baseY);x.lineTo(xx,baseY-amp*0.3);x.stroke();}
+    }
+    // strike dashed frontier
+    x.setLineDash([4,3]);x.strokeStyle='#c2342f';x.lineWidth=1;
+    x.beginPath();x.moveTo(ox+0.8*N*sx,oy-10);x.lineTo(ox+0.8*N*sx+LINES*dzx,oy+LINES*dz);x.stroke();x.setLineDash([]);
+    // tooltip box
+    x.fillStyle='#fff';x.strokeStyle='#ddd';x.fillRect(w*0.40,h*0.40,96,30);x.strokeRect(w*0.40,h*0.40,96,30);
+    x.fillStyle='#333';x.font='7px monospace';x.textAlign='left';
+    x.fillText('P(<STRIKE) 0.07%',w*0.40+5,h*0.40+10);
+    x.fillStyle='#c2342f';x.fillText('IMPLIED ×460.0',w*0.40+5,h*0.40+19);
+    x.fillStyle='#888';x.fillText('CROSSING +1.99',w*0.40+5,h*0.40+28);
+    // labels
+    x.fillStyle='#b8b6ad';x.textAlign='center';
+    x.fillText('PRICE-TARGET DENSITY · CRYPTO TARGETS',w*0.42,oy-16);
+    x.textAlign='right';x.fillText('STRIKE $66,000',w-8,oy-16);x.fillText('TAIL 200¢ · PAYOUT ×183',w-8,oy-6);
+    phase+=0.03;requestAnimationFrame(ridge);
+  }
+  ridge();
+})();
+
+/* ---------- Relationship Graph Simulation (force-ish) ---------- */
+(function(){
+  const c=$('graph');const{x,w,h}=fit(c,270);
+  const COLORS={bear:'#c2342f',bull:'#1f8a4c',median:'#111',catalyst:'#e9a23b',hub:'#9a98c8'};
+  const classes=['bear','bull','median','catalyst','hub'];
+  const N=64;const nodes=[];const edges=[];
+  // a few anchor hubs
+  const hubs=[{x:w*0.30,y:h*0.55,r:14,c:'bear',label:'BEAR_CLUSTER'},
+              {x:w*0.55,y:h*0.70,r:13,c:'median',label:'HGR_PRIME'},
+              {x:w*0.72,y:h*0.45,r:11,c:'hub',label:'CATALYST_RING'}];
+  hubs.forEach(hb=>nodes.push({...hb,fx:hb.x,fy:hb.y,vx:0,vy:0,anchor:true}));
+  for(let i=0;i<N;i++){
+    const cl=classes[Math.floor(Math.random()*classes.length)];
+    nodes.push({x:Math.random()*w,y:Math.random()*h,vx:0,vy:0,r:1.5+Math.random()*3,c:cl});
+  }
+  // edges: connect to nearest hub + random
+  for(let i=hubs.length;i<nodes.length;i++){
+    const hb=Math.floor(Math.random()*hubs.length);edges.push([i,hb,0.4]);
+    if(Math.random()<0.4)edges.push([i,hubs.length+Math.floor(Math.random()*(N))%nodes.length,0.15]);
+  }
+  // signal path (dashed) across hubs
+  const path=[0,1,2];
+  let off=0;
+  function step(){
+    x.clearRect(0,0,w,h);
+    // forces
+    for(let i=0;i<nodes.length;i++){const a=nodes[i];if(a.anchor)continue;
+      a.vx*=0.86;a.vy*=0.86;
+      for(let j=0;j<nodes.length;j++){if(i===j)continue;const b=nodes[j];
+        let dx=a.x-b.x,dy=a.y-b.y;let d2=dx*dx+dy*dy+0.01;if(d2<6000){const f=18/d2;a.vx+=dx*f;a.vy+=dy*f;}}
+      // gentle centering
+      a.vx+=(w/2-a.x)*0.0008;a.vy+=(h/2-a.y)*0.0008;
+    }
+    edges.forEach(e=>{const a=nodes[e[0]],b=nodes[e[1]];if(!a||!b)return;
+      let dx=b.x-a.x,dy=b.y-a.y,d=Math.hypot(dx,dy)||1;const target=42;const f=(d-target)*0.002*e[2];
+      if(!a.anchor){a.vx+=dx/d*f;a.vy+=dy/d*f;}if(!b.anchor){b.vx-=dx/d*f;b.vy-=dy/d*f;}});
+    nodes.forEach(n=>{if(n.anchor)return;n.x+=n.vx;n.y+=n.vy;n.x=Math.max(4,Math.min(w-4,n.x));n.y=Math.max(4,Math.min(h-4,n.y));});
+    // edges
+    edges.forEach(e=>{const a=nodes[e[0]],b=nodes[e[1]];if(!a||!b)return;
+      x.beginPath();x.moveTo(a.x,a.y);x.lineTo(b.x,b.y);x.strokeStyle='rgba(150,148,140,'+(0.10+e[2]*0.4)+')';x.lineWidth=0.5;x.stroke();});
+    // nodes
+    nodes.forEach(n=>{x.beginPath();x.arc(n.x,n.y,n.r,0,7);x.fillStyle=COLORS[n.c];x.globalAlpha=n.anchor?1:0.85;x.fill();x.globalAlpha=1;
+      if(n.anchor){x.fillStyle='#fff';x.font='7px monospace';x.textAlign='center';x.fillStyle='#444';
+        x.fillStyle='#fff';x.fillRect(n.x-n.label.length*2.5,n.y+n.r+2,n.label.length*5,9);
+        x.strokeStyle='#ddd';x.strokeRect(n.x-n.label.length*2.5,n.y+n.r+2,n.label.length*5,9);
+        x.fillStyle='#333';x.fillText(n.label,n.x,n.y+n.r+9);}
+    });
+    // signal path dashed
+    x.setLineDash([5,4]);x.lineDashOffset=-off;off+=0.6;
+    x.beginPath();path.forEach((p,i)=>{const n=nodes[p];i?x.lineTo(n.x,n.y):x.moveTo(n.x,n.y);});
+    x.strokeStyle='#222';x.lineWidth=1.4;x.stroke();x.setLineDash([]);
+    // MIRO target tag
+    const last=nodes[path[path.length-1]];
+    x.fillStyle='#fff';x.strokeStyle='#111';x.fillRect(last.x+14,last.y-22,42,14);x.strokeRect(last.x+14,last.y-22,42,14);
+    x.fillStyle='#1f8a4c';x.font='8px monospace';x.textAlign='center';x.fillText('MIRO ▲',last.x+35,last.y-12);
+    requestAnimationFrame(step);
+  }
+  step();
+})();
+
+/* ---------- edge distribution histogram ---------- */
+(function(){const c=$('edgehist');const{x,w,h}=fit(c,56);
+  function draw(){x.clearRect(0,0,w,h);const B=34;const bw=w/B;
+    for(let i=0;i<B;i++){const center=B*0.5;const g=Math.exp(-Math.pow((i-center)/7,2));
+      const bh=g*(h-8)*(0.7+0.3*Math.sin(Date.now()*0.002+i));
+      const profit=i>center; x.fillStyle=profit?'#1f8a4c':'#c2342f';x.globalAlpha=0.85;
+      x.fillRect(i*bw+1,h-bh,bw-1.5,bh);x.globalAlpha=1;}
+    requestAnimationFrame(draw);}
+  draw();
+})();
+
+/* live convergence flicker */
+setInterval(()=>{$('conv').textContent=(90.8+Math.random()*1.2).toFixed(0).slice(0,2)+'%';},1200);
+</script>
+</body>
+</html>
